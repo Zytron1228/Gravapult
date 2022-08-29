@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 player.rotation += rot/2
                 println(player.x.toString() + ", " + player.y.toString())
 //            velc = Force(totalX/1.125f, totalY/-1.125f)
-                println(velc.toString())
+//                println(velc.toString())
 //                totalForce.component1().x = velc.x
 //                totalForce.component1().y = velc.y
 //                totalForce.component1().leftRot = velc.leftRot
