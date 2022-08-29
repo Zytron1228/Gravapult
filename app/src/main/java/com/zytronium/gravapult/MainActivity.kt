@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.VelocityTrackerCompat
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -118,6 +120,16 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+class Thing(
+    private var view: View,
+    var velocity: Velocity
+)
+
+class Velocity(
+    var speed: Float,
+    var direction:
+)
 
 class Force(var x: Float, var y: Float, var leftRot: Float = 0f, var rightRot: Float = 0f)
 
