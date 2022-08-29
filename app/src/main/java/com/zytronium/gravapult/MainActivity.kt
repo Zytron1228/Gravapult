@@ -3,16 +3,19 @@ package com.zytronium.gravapult
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
     private lateinit var player: ImageView
     private lateinit var planet: ImageView
+    private lateinit var space: ConstraintLayout
     private var maxObstDist = 25
     private var grav: Force = Force(0f, 0f)
-    private var velc = Force(10f, 0f, rightRot = 6f)
+    private var velc = Force(0f, 0f, rightRot = 6f)
     private var totalForce: Array<Force> = arrayOf(velc, grav)
     private var simulating = false
     private var startPoint: Coordinate = Coordinate(0f, 0f)
@@ -22,16 +25,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         player = findViewById(R.id.player)
         planet = findViewById(R.id.planet)
+        space = findViewById(R.id.space)
         println("x: " + player.x.toString() + " y: " +  player.y.toString())
         planet.setOnClickListener {
             simulating = !simulating
             if(simulating) {
-            velc = Force(10f, 0f, rightRot = 6f)
+            velc = Force(0f, 0f, rightRot = 6f)
                 player.x = startPoint.x
                 player.y = startPoint.y
                 applyForces()
             }
         }
+//        space.setOnClickListener {
+//            var posx = MotionEvent.PointerCoords
+//        }
         findStartPoint()
 
     }
@@ -57,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             var y1 = player.y+(player.height/2)
                 println(player.x.toString() + ", " + player.y.toString())
                 grav = gravity(player, planet)
-                println(grav.toString())
+//                println(grav.toString())
                 totalForce.component2().x = grav.x
                 totalForce.component2().y = grav.y
 
@@ -100,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         val gc = 6.6742f * 10.0.pow(-11).toFloat()
         val gForce = (gc*((mass1*mass2) / (dist/500).pow(2)).toFloat())
         println("gforce: $gForce")
-        return Force(((/*reltvPos2.x / */ (reltvPos2.x)) * if(reltvPos2.x < 0) (gForce * -1) else gForce), ((/*reltvPos2.x / */(reltvPos2.y)) * (if(reltvPos2.y < 0) (gForce * -1) else (gForce))))
+        return Force(((/*reltvPos2.x / */ (reltvPos2.x)) * /*if(reltvPos2.x < 0) (gForce * -1) else*/ gForce), ((/*reltvPos2.x / */(reltvPos2.y)) * (gForce* -1) /*(if(reltvPos2.y < 0) (gForce) else (gForce * -1f))*/))
 
 
     }
