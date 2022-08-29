@@ -128,7 +128,7 @@ class Thing(
 
 class Velocity(
     var speed: Float,
-    var direction:
+    var direction: Float
 )
 
 class Force(var x: Float, var y: Float, var leftRot: Float = 0f, var rightRot: Float = 0f)
