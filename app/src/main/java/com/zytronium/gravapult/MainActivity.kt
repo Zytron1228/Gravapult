@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.forEach
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -36,7 +37,15 @@ class MainActivity : AppCompatActivity() {
         planet.setOnClickListener {
             simulating = !simulating
             if(simulating) {
-            velc = Force(50f, 0f, rightRot = 6f)
+                var no = listOf<ImageView>()
+                space.forEach { view: View ->
+                    if(view is ImageView && view.tag == "physical") {
+                        no = no.plus(view)
+//                        space.removeView(view)
+                        view.visibility = View.GONE
+                    }
+                }
+            velc = Force(0f, 0f, rightRot = 6f)
                 player.x = startPoint.x
                 player.y = startPoint.y
                 applyForces(plr)
@@ -66,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                     asteroid.tag = "physical"
 
             space.addView(asteroid)
-                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(0f, 0f, 0f, 5f), Force(0f, 0f), Force(40f, 15f, -5f)))
+                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(15f, 0f, 0f, 5f), Force(0f, 0f), Force(210f, 45f, -5f)))
                     applyForces(ast)
                 }
 
@@ -116,8 +125,8 @@ class MainActivity : AppCompatActivity() {
                 }
             val acclrtn = acceleration(Force(totalX, totalY, 0f, rot), i)
             obj.velocity.speed = acclrtn
-                i.x += (totalX*acclrtn)*2
-                i.y -= (totalY*acclrtn)*2
+                i.x += (totalX*acclrtn)
+                i.y -= (totalY*acclrtn)
                 i.rotation += rot/2
                 println(i.x.toString() + ", " + i.y.toString())
             var x2 = i.x
@@ -128,12 +137,14 @@ class MainActivity : AppCompatActivity() {
                                 .toDouble().pow(2)
                         )
             println("estimated acclrtn: $acclrtn; actual change in position: $accl2")
+            val oldVlcty = vlty
             vlty = Force(totalX-vlty.x, totalY-vlty.y)
                 println("velocity: $vlty")
                 obj.forces.component1().x = vlty.x
                 obj.forces.component1().y = vlty.y
                 obj.forces.component1().leftRot = velc.leftRot
                 obj.forces.component1().rightRot = velc.rightRot
+            obj.forces = mutableListOf(obj.forces.component1(), obj.forces.component2(), Force((oldVlcty.x + velc.x)/1.0625f, (oldVlcty.y + velc.y)/1.0625f))
                 applyForces(obj)
             }
         }, 25)
