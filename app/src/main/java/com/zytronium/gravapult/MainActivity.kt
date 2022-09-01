@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
@@ -20,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private var maxObstDist = 25
     private var grav: Force = Force(0f, 0f)
-    private var velc = Force(50f, 0f, rightRot = 6f)
+    private var velc = Force(20f, 0f, rightRot = 6f)
     private var totalForce: MutableList<Force> = mutableListOf(velc, grav)
     private var simulating = false
     private var startPoint: Coordinate = Coordinate(0f, 0f)
@@ -69,13 +68,13 @@ class MainActivity : AppCompatActivity() {
             player.measuredWidth,
             player.measuredHeight
         )
-                    asteroid.x = x
-                    asteroid.y = y
+                    asteroid.x = x + player.width/2
+                    asteroid.y = y - player.height/2
                     asteroid.background = getColor(R.color.purple_500).toDrawable()
                     asteroid.tag = "physical"
 
             space.addView(asteroid)
-                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(15f, 0f, 0f, 5f), Force(0f, 0f), Force(210f, 45f, -5f)))
+                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(5f, 0f, 0f, 5f), Force(0f, 0f), Force(235f, 61f, -5f)))
                     applyForces(ast)
                 }
 
@@ -129,9 +128,9 @@ class MainActivity : AppCompatActivity() {
                 i.y -= (totalY*acclrtn)
                 i.rotation += rot/2
                 println(i.x.toString() + ", " + i.y.toString())
-            var x2 = i.x
-            var y2 = i.y
-            var p2 = Coordinate(x2, y2)
+            val x2 = i.x
+            val y2 = i.y
+            val p2 = Coordinate(x2, y2)
             val accl2 = kotlin.math.sqrt(
                             kotlin.math.abs(p1.x - p2.x).toDouble().pow(2) + kotlin.math.abs(p1.y - p2.y)
                                 .toDouble().pow(2)
@@ -144,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                 obj.forces.component1().y = vlty.y
                 obj.forces.component1().leftRot = velc.leftRot
                 obj.forces.component1().rightRot = velc.rightRot
-            obj.forces = mutableListOf(obj.forces.component1(), obj.forces.component2(), Force((oldVlcty.x + velc.x)/1.0625f, (oldVlcty.y + velc.y)/1.0625f))
+            obj.forces = mutableListOf(obj.forces.component1(), obj.forces.component2(), Force((oldVlcty.x + velc.x)/1.0525f, (oldVlcty.y + velc.y)/1.0525f))
                 applyForces(obj)
             }
         }, 25)
@@ -163,21 +162,20 @@ class MainActivity : AppCompatActivity() {
                         )
         val reltvPos2 =  Coordinate(cent2.x-cent1.x, cent1.y-cent2.y)
         val gc = 6.2742f * 10.0.pow(-11).toFloat()
-        val gForce = (gc*((mass1*mass2) / (dist/1400).pow(2)).toFloat())/2f
+        val gForce = (gc*((mass1*mass2) / (dist/1300).pow(2)).toFloat())/2f
         println("gforce: $gForce")
         return Force(((/*reltvPos2.x / */ (reltvPos2.x)) * (if(gForce > 1f) 1F else gForce) /*if(reltvPos2.x < 0) (gForce * -1) else gForce*/ ), ((/*reltvPos2.x / */(reltvPos2.y)) * (if (gForce > 1) 1f else gForce))/*(if(reltvPos2.y < 0) (gForce) else (gForce * -1f))*/)
 
 
     }
 
-    private fun acceleration(force: Force, obj: View) : Float {
+    private fun acceleration(force: Force, obj: View): Float {
         val m = (obj.width * obj.height).toFloat()
         val f = kotlin.math.sqrt(
-                            kotlin.math.abs(force.x).toDouble().pow(2) + kotlin.math.abs(force.y)
-                                .toDouble().pow(2)
-                        ).toFloat()
-        val a = f/m
-        return a
+            kotlin.math.abs(force.x).toDouble().pow(2) + kotlin.math.abs(force.y)
+                .toDouble().pow(2)
+        ).toFloat()
+        return f / m
     }
 
 }
