@@ -1,9 +1,11 @@
 package com.zytronium.gravapult
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
@@ -11,6 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.forEach
 import kotlin.math.pow
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
     private lateinit var player: ImageView
@@ -20,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var maxObstDist = 25
     private var grav: Force = Force(0f, 0f)
     private var velc = Force(20f, 0f, rightRot = 6f)
-    private var totalForce: MutableList<Force> = mutableListOf(velc, grav)
+//    private var totalForce: MutableList<Force> = mutableListOf(velc, grav)
     private var simulating = false
     private var startPoint: Coordinate = Coordinate(0f, 0f)
     private var found = false
@@ -31,7 +36,15 @@ class MainActivity : AppCompatActivity() {
         player = findViewById(R.id.player)
         planet = findViewById(R.id.planet)
         space = findViewById(R.id.space)
-        var plr = Thing(player, 0f, Velocity(0f, 0f), totalForce)
+            val windowInsetsController =
+                ViewCompat.getWindowInsetsController(window.decorView) ?: return
+            // Configure the behavior of the hidden system bars
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            // Hide both the status bar and the navigation bar
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+
+        var plr = Thing(player, 0f, Velocity(0f, 0f), mutableListOf(velc, grav))
         println("x: " + player.x.toString() + " y: " +  player.y.toString())
         planet.setOnClickListener {
             simulating = !simulating
@@ -68,13 +81,14 @@ class MainActivity : AppCompatActivity() {
             player.measuredWidth,
             player.measuredHeight
         )
-                    asteroid.x = x + player.width/2
-                    asteroid.y = y - player.height/2
+                    asteroid.x = x + player.width
+                    asteroid.y = y - player.height
                     asteroid.background = getColor(R.color.purple_500).toDrawable()
                     asteroid.tag = "physical"
 
             space.addView(asteroid)
-                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(5f, 0f, 0f, 5f), Force(0f, 0f), Force(235f, 61f, -5f)))
+                    var ast = Thing(asteroid, 0f, Velocity(0f, 0f), mutableListOf(Force(51f, 0f, 0f, 5f), Force(0f, 0f), Force(200f, -40f, -9f)))
+                    rainbow(ast.view, 10f, 40)
                     applyForces(ast)
                 }
 
@@ -126,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             obj.velocity.speed = acclrtn
                 i.x += (totalX*acclrtn)
                 i.y -= (totalY*acclrtn)
-                i.rotation += rot/2
+                i.rotation += rot/1.25f
                 println(i.x.toString() + ", " + i.y.toString())
             val x2 = i.x
             val y2 = i.y
@@ -146,7 +160,7 @@ class MainActivity : AppCompatActivity() {
             obj.forces = mutableListOf(obj.forces.component1(), obj.forces.component2(), Force((oldVlcty.x + velc.x)/1.0525f, (oldVlcty.y + velc.y)/1.0525f))
                 applyForces(obj)
             }
-        }, 25)
+        }, 21)
 //        } while(true)
 //    }
         }
@@ -162,8 +176,8 @@ class MainActivity : AppCompatActivity() {
                         )
         val reltvPos2 =  Coordinate(cent2.x-cent1.x, cent1.y-cent2.y)
         val gc = 6.2742f * 10.0.pow(-11).toFloat()
-        val gForce = (gc*((mass1*mass2) / (dist/1300).pow(2)).toFloat())/2f
-        println("gforce: $gForce")
+        val gForce = (gc*((mass1*mass2) / (dist/635).pow(2)).toFloat())/1.33f
+//        println("gforce: $gForce")
         return Force(((/*reltvPos2.x / */ (reltvPos2.x)) * (if(gForce > 1f) 1F else gForce) /*if(reltvPos2.x < 0) (gForce * -1) else gForce*/ ), ((/*reltvPos2.x / */(reltvPos2.y)) * (if (gForce > 1) 1f else gForce))/*(if(reltvPos2.y < 0) (gForce) else (gForce * -1f))*/)
 
 
@@ -177,7 +191,12 @@ class MainActivity : AppCompatActivity() {
         ).toFloat()
         return f / m
     }
-
+    private fun rainbow(target: View, hue: Float, speed: Long) {
+        var h = hue
+        if (h >= 360f) h = 0f
+        target.setBackgroundColor(Color.HSVToColor(floatArrayOf(h,100f,100f)))
+        Handler(Looper.getMainLooper()).postDelayed({ rainbow(target, (h + 2.5f), speed) }, (speed))
+    }
 }
 
 class Thing(
