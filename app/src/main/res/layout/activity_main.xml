@@ -8,6 +8,19 @@
     android:id="@+id/space"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/angleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="angle: ?"
+        android:textColor="@color/teal_200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.347"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.04" />
+
     <ImageView
         android:id="@+id/player"
         android:layout_width="15dp"
@@ -22,15 +35,29 @@
         app:layout_constraintVertical_bias="0.661" />
 
     <ImageView
+        android:id="@+id/moon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:background="#885DFF"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.623" />
+
+    <ImageView
         android:id="@+id/planet"
         android:layout_width="145dp"
         android:layout_height="145dp"
-        android:src="@drawable/circle_sprite"
+        android:src="@drawable/earth2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.686"
+        app:layout_constraintHorizontal_bias="0.773"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.804" />
+        app:layout_constraintVertical_bias="0.383" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
