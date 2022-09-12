@@ -4,9 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     android:id="@+id/space"
+    android:background="@color/black"
     tools:context=".MainActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="-5dp"
+        android:alpha="0.85"
+        android:scaleType="centerCrop"
+        android:src="@drawable/space" />
+
+    <TextView
+        android:id="@+id/moonAngleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="moon angle: ?"
+        android:textColor="@color/teal_200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.61"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.04" />
 
     <TextView
         android:id="@+id/angleText"
@@ -35,17 +56,84 @@
         app:layout_constraintVertical_bias="0.661" />
 
     <ImageView
+        android:id="@+id/autoOrbiter"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_baseline_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.398" />
+
+    <ImageView
         android:id="@+id/moon"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:background="#885DFF"
         android:elevation="1dp"
+        android:src="@drawable/ic_baseline_circle_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.623" />
+        app:layout_constraintVertical_bias="0.241"
+        app:tint="#885DFF" />
+
+    <ImageView
+        android:id="@+id/moonAngleIndicator"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:elevation="1dp"
+        android:src="@drawable/ic_baseline_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.227"
+        app:tint="#00FF66" />
+
+    <ImageView
+        android:id="@+id/moon2"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:elevation="1dp"
+        android:src="@drawable/ic_baseline_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.395"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.422"
+        app:tint="#FF5D5D" />
+
+    <ImageView
+        android:id="@+id/moonAngleIndicator2"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:elevation="1dp"
+        android:src="@drawable/ic_baseline_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.424"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.455"
+        app:tint="#B3FF00" />
+
+    <ImageView
+        android:id="@+id/planet2"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:elevation="1dp"
+        android:src="@drawable/earth2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.378"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.461" />
 
     <ImageView
         android:id="@+id/planet"
@@ -54,10 +142,10 @@
         android:src="@drawable/earth2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.773"
+        app:layout_constraintHorizontal_bias="0.376"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.383" />
+        app:layout_constraintVertical_bias="0.426" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
