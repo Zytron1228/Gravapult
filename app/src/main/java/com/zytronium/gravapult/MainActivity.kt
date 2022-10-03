@@ -14,19 +14,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.util.toRange
 import androidx.core.view.forEach
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import java.util.*
 import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var player: ImageView
     private lateinit var moon: ImageView
     private lateinit var planet: ImageView
+    private lateinit var planet5: ImageView
     private lateinit var autoOrbiter: ImageView
     private lateinit var space: ConstraintLayout
     private lateinit var TVangle: TextView
+    private lateinit var velocityIndicatorLine: View
     private var newAstSpawn: Coordinate = Coordinate(0f, 0f)
 
 //    private var maxObstDist = 25
@@ -43,8 +47,10 @@ class MainActivity : AppCompatActivity() {
         player = findViewById(R.id.player)
         moon = findViewById(R.id.moon)
         planet = findViewById(R.id.planet)
+        planet5 = findViewById(R.id.planet5)
         autoOrbiter = findViewById(R.id.autoOrbiter)
         space = findViewById(R.id.space)
+        velocityIndicatorLine = findViewById(R.id.vil)
         TVangle = findViewById(R.id.angleText)
         val windowInsetsController =
             ViewCompat.getWindowInsetsController(window.decorView) ?: return
@@ -57,9 +63,11 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        var mn = Thing(moon, true, Force(0f, 0f)/*, mutableListOf(grav, Force(0f, 0f*//*, angle = 0f, strength = 0f*//*))*/)
+//        planet.tag = "physical"
+        var earthPlanet = Thing(planet5, true, Force(-50f, 13f))
+        var mn = Thing(moon, false, Force(0f, 0f)/*, mutableListOf(grav, Force(0f, 0f*//*, angle = 0f, strength = 0f*//*))*/)
 
-        var plr = Thing(player, true/*, velc, mutableListOf(grav)*/)
+        var plr = Thing(player, false/*, velc, mutableListOf(grav)*/)
         println("x: " + player.x.toString() + " y: " +  player.y.toString())
         planet.setOnClickListener {
             simulating = !simulating
@@ -76,17 +84,18 @@ class MainActivity : AppCompatActivity() {
                     space.removeView(it)
                 }
                 no = listOf<ImageView>()
-            plr.velocity = Force(0f, 0f, rightRot = 6f)
-                player.x = startPoint.x
-                player.y = startPoint.y
-                applyForces(plr)
-                gravity(moon, planet)
-                mn.velocity = Force(0f, 0f, angle = calcOrbitAngle(moon, planet)+45f, strength = calcOrbitVelocity(moon, planet)*13.15F)
-                val velgrav = gravity(mn.view, planet)
-                mn.velocity.x += velgrav.x
-                mn.velocity.y += velgrav.y
+//            plr.velocity = Force(0f, 0f, rightRot = 6f)
+//                player.x = startPoint.x
+//                player.y = startPoint.y
+//                applyForces(plr)
 
-                applyForces(mn)
+//                mn.velocity = Force(0f, 0f, angle = calcOrbitAngle(moon, planet)+45f, strength = calcOrbitVelocity(moon, planet)*13.15F)
+//                val velgrav = gravity(mn.view, planet)
+//                mn.velocity.x += velgrav.x
+//                mn.velocity.y += velgrav.y
+
+                applyForces(earthPlanet)
+//                applyForces(mn)
                 simulateAutoOrbit(autoOrbiter, planet)
                 rainbow(autoOrbiter, 10f, 30)
             } else recreate()
@@ -123,12 +132,24 @@ class MainActivity : AppCompatActivity() {
 
             when (event.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
+                    velocityIndicatorLine.visibility = View.VISIBLE
                     newAstSpawn = Coordinate(x, y)
+                    velocityIndicatorLine.x = x
+                    velocityIndicatorLine.y = y + velocityIndicatorLine.height/2
+
                 }
                 MotionEvent.ACTION_MOVE -> {
                     TVangle.text = "Angle: ${angleBetween(Coordinate(x, y), planet)}"
+                    velocityIndicatorLine.visibility = View.VISIBLE
+                    velocityIndicatorLine.layoutParams = ConstraintLayout.LayoutParams(calcDistanceBetween(newAstSpawn, Coordinate(x, y)).toInt(), velocityIndicatorLine.height)
+                    velocityIndicatorLine.rotation = angleBetween(Coordinate(x, y), newAstSpawn )
+                       //if(newAstSpawn.x > x) x else newAstSpawn.x// - velocityIndicatorLine.measuredWidth
+                          //if(newAstSpawn.y > y) newAstSpawn.y + y/2  else y - newAstSpawn.y/2//- velocityIndicatorLine.width// - velocityIndicatorLine.measuredHeight/2
+//                    velocityIndicatorLine.pivotX = 0f
                 }
                 MotionEvent.ACTION_UP -> {
+                    velocityIndicatorLine.visibility = View.INVISIBLE
+//                    velocityIndicatorLine.layoutParams = ConstraintLayout.LayoutParams(0, velocityIndicatorLine.height)
                     createAsteroid(newAstSpawn.x, newAstSpawn.y, Velocity((calcDistanceBetween(newAstSpawn, Coordinate(x, y))/17f), (angleBetweenFixed(newAstSpawn, Coordinate(x, y)))))
                 }
 
@@ -140,18 +161,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createAsteroid(x: Float, y: Float, velocity: Velocity) {
-                    val asteroid = ImageView(this)
-                    asteroid.layoutParams = ConstraintLayout.LayoutParams(player.measuredWidth, player.measuredHeight)
-                    asteroid.x = x - player.width/2f
-                    asteroid.y = y - player.height/2f
-//                    asteroid.background = getColor(R.color.purple_500).toDrawable()
-                    asteroid.tag = "physical"
-                    asteroid.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.earth2))
+        val asteroid = ImageView(this)
+        val size = (player.measuredWidth*1.4).toInt() //((player.measuredWidth / 1.5).toInt()..(player.measuredWidth * 2.75).toInt()).random()
+        asteroid.layoutParams = ConstraintLayout.LayoutParams(size, size)
+        asteroid.x = x - size / 2f
+        asteroid.y = y - size / 2f
+//        asteroid.background = getColor(R.color.purple_500).toDrawable()
+        asteroid.tag = "physical"
+        asteroid.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.earth2))
 
-            space.addView(asteroid)
-                    var ast = Thing(asteroid, true, Force(0f, 0f, 0f, 0f, velocity.direction, velocity.speed), mutableListOf(Force(0f, 0f), Force(0f, 0f)))
-                    rainbow(asteroid, 15f, 50)
-                    applyForces(ast)
+        space.addView(asteroid)
+        var ast = Thing(asteroid, true, Force(0f, 0f, 0f, 0f, velocity.direction, velocity.speed), mutableListOf(Force(0f, 0f), Force(0f, 0f)))
+//        if (Random().nextBoolean() && !Random().nextBoolean())
+//            rainbow(asteroid, 15f, 50) else
+        asteroid.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.earth2))
+        applyForces(ast)
     }
 
     private fun findStartPoint() {
@@ -178,7 +202,7 @@ class MainActivity : AppCompatActivity() {
             val pgravity = gravity(i, planet)
             var totalGrav: MutableList<Force> = /*if(i != moon) mutableListOf() else*/ mutableListOf(pgravity)
             if(i != moon) {
-                  space.forEach { view: View -> if(view.tag == "physical")
+                  space.forEach { view: View -> if(view.tag == "physical" && view != i)
                   totalGrav += gravity(i, view)
                   }
             }
@@ -244,18 +268,18 @@ class MainActivity : AppCompatActivity() {
             if(obj.view == moon) {
                 obj.forces = mutableListOf(gravity(i, planet), /*Force(0f, 0f, angle = calcOrbitAngle(obj.vilanet)+0f, strength = calcOrbitVelocity(obj.view, planet)*16.5f)*//*, Force(gravity(i, planet).x*-1f, gravity(i, planet).y*-1f)*/)
                 findViewById<TextView>(R.id.moonAngleText).text = "Moon Angle: ${calcOrbitAngle(obj.view, planet) +45f}"
-                var mai: ImageView = findViewById<ImageView>(R.id.moonAngleIndicator)
-                val angleCoords = angleToCoords(Force(0f, 0f, angle = calcOrbitAngle(obj.view, planet)+225f, strength = calcOrbitVelocity(obj.view, planet)*33.5f))
-                mai.x = (centerOf(moon).x) + angleCoords.x
-                mai.y = (centerOf(moon).y) + angleCoords.y
-                var mai2: ImageView = findViewById<ImageView>(R.id.moonAngleIndicator2)
-//                val angleCoords = angleToCoords(Force(0f, 0f, angle = calcOrbitAngle(obj.view, planet)+15f, strength = calcOrbitVelocity(obj.view, planet)*33.5f))
-                mai2.x = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).x) + angleCoords.x
-                mai2.y = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).y) + angleCoords.y
-                var pai: ImageView = findViewById<ImageView>(R.id.planet2)
-                var pac: Coordinate = Coordinate(centerOf(planet).x - centerOf(moon).x, centerOf(planet).y - centerOf(moon).y)
-                pai.x = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).x) + ((pac.x/30f))
-                pai.y = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).y) + ((pac.y/30f))
+//                var mai: ImageView = findViewById<ImageView>(R.id.moonAngleIndicator)
+//                val angleCoords = angleToCoords(Force(0f, 0f, angle = calcOrbitAngle(obj.view, planet)+225f, strength = calcOrbitVelocity(obj.view, planet)*33.5f))
+//                mai.x = (centerOf(moon).x) + angleCoords.x
+//                mai.y = (centerOf(moon).y) + angleCoords.y
+//                var mai2: ImageView = findViewById<ImageView>(R.id.moonAngleIndicator2)
+////                val angleCoords = angleToCoords(Force(0f, 0f, angle = calcOrbitAngle(obj.view, planet)+15f, strength = calcOrbitVelocity(obj.view, planet)*33.5f))
+//                mai2.x = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).x) + angleCoords.x
+//                mai2.y = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).y) + angleCoords.y
+//                var pai: ImageView = findViewById<ImageView>(R.id.planet2)
+//                var pac: Coordinate = Coordinate(centerOf(planet).x - centerOf(moon).x, centerOf(planet).y - centerOf(moon).y)
+//                pai.x = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).x) + ((pac.x/30f))
+//                pai.y = (/*centerOf*/(findViewById<ImageView>(R.id.moon2)).y) + ((pac.y/30f))
 //                val orbitForce = calcOrbitForce(obj.view, planet)
 //                obj.forces.component2().x = orbitForce.x
 //                obj.forces.component2().y = orbitForce.y
@@ -264,7 +288,7 @@ class MainActivity : AppCompatActivity() {
             }
                 applyForces(obj)
             }
-        }, 15)
+        }, 20)
         }
 
     private fun calcDistanceBetween(to: Coordinate, from: Coordinate): Float {
@@ -368,7 +392,7 @@ class MainActivity : AppCompatActivity() {
                         )
         val reltvPos2 =  Coordinate(cent2.x-cent1.x, cent1.y-cent2.y)
         val gc = 6.2742f * 10f.pow(-11).toFloat()
-        val gForce = (gc*((mass1*mass2) / (dist/255f).pow(2)).toFloat())*11.75f //1.33f
+        val gForce = (gc*((mass1*mass2) / (dist/355f).pow(2.4f)).toFloat())*17.75f //1.33f
 //        println("gforce: $gForce")
         return Force(((/*reltvPos2.x / */ (reltvPos2.x)) * (if(gForce > 1f) 1F else gForce) /*if(reltvPos2.x < 0) (gForce * -1) else gForce*/ ), ((/*reltvPos2.x / */(reltvPos2.y)) * (if (gForce > 1f) 1f else gForce))/*(if(reltvPos2.y < 0) (gForce) else (gForce * -1f))*/)
 
@@ -398,6 +422,9 @@ class Thing(
     var velocity: Force = Force(0f, 0f),
     var forces: MutableList<Force> = mutableListOf<Force>(Force(0f, 0f, 0f, 1f), Force(0f, 0f))
 )
+{
+    fun mass() : Int { return (this.view.width * this.view.height) }
+}
 
 class Velocity(
     var speed: Float = 0f,
